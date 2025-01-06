@@ -23,7 +23,6 @@ function formatLargeNumber(num) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const fetchCpmButton = document.getElementById("fetch-cpm");
     const cpmElement = document.getElementById("cpm");
     console.log("DOM fully loaded and parsed");
 
@@ -67,8 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const formattedCpm = formatLargeNumber(cpm); // Format the CPM
                 console.log("Formatted CPM:", formattedCpm);
 
-
-
                 cpmElement.textContent = `CPM: ${formattedCpm} cookies`; // Display the formatted CPM
             } else {
                 console.log("Could not retrieve cookies per second.");
@@ -80,8 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    fetchCpmButton.addEventListener("click", () => {
-        console.log("Fetch CPM button clicked");
-        fetchCPM();
-    });
+    // Automatically fetch CPM when the popup loads
+    fetchCPM();
 });
