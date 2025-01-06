@@ -24,6 +24,11 @@ function formatLargeNumber(num) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const cpmElement = document.getElementById("cpm");
+    const upgradeElement = document.createElement("div");
+    upgradeElement.id = "get-lucky-status";
+    upgradeElement.textContent = "Checking 'Get Lucky' status...";
+    document.body.appendChild(upgradeElement);
+
     console.log("DOM fully loaded and parsed");
 
     const fetchCPM = async () => {
@@ -43,24 +48,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
             });
 
-            // Listen for the custom event to retrieve cookiesPerSecond
-            const [{ result }] = await chrome.scripting.executeScript({
+            // Listen for the combined custom event to retrieve both cookies per second and 'Get Lucky' status
+            const [{ result: gameData }] = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 func: () => {
                     return new Promise((resolve) => {
                         const handler = (event) => {
-                            window.removeEventListener("CookiesPsRetrieved", handler);
-                            resolve(event.detail.cookiesPerSecond);
+                            window.removeEventListener("GameDataRetrieved", handler);
+                            resolve(event.detail);
                         };
-                        window.addEventListener("CookiesPsRetrieved", handler);
+                        window.addEventListener("GameDataRetrieved", handler);
                     });
                 },
             });
 
-            console.log("Cookies per second retrieved:", result);
+            console.log("Game data retrieved:", gameData);
 
-            if (result !== null) {
-                const cpm = result * 6000;
+            if (gameData.cookiesPerSecond !== null) {
+                const cpm = gameData.cookiesPerSecond * 6000;
                 console.log("Calculated CPM:", cpm);
 
                 const formattedCpm = formatLargeNumber(cpm); // Format the CPM
@@ -71,12 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log("Could not retrieve cookies per second.");
                 cpmElement.textContent = "Could not retrieve cookies per second.";
             }
+
+            upgradeElement.textContent = `Get Lucky: ${gameData.hasGetLucky ? "yes" : "no"}`;
+
         } catch (error) {
-            console.error("Error fetching CPM:", error);
+            console.error("Error fetching CPM or 'Get Lucky' status:", error);
             cpmElement.textContent = "Error calculating CPM.";
+            upgradeElement.textContent = "Error checking 'Get Lucky' status.";
         }
     };
 
-    // Automatically fetch CPM when the popup loads
+    // Automatically fetch CPM and 'Get Lucky' status when the popup loads
     fetchCPM();
 });
