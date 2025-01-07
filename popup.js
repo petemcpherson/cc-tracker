@@ -65,11 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Game data retrieved:", gameData);
 
             if (gameData.cookiesPerSecond !== null) {
-                const cpm = gameData.cookiesPerSecond * 6000;
-                console.log("Calculated CPM:", cpm);
+                const multiplier = gameData.hasGetLucky ? 42000 : 6000;
+                const cpm = gameData.cookiesPerSecond * multiplier;
+                // console.log("Calculated CPM:", cpm);
 
                 const formattedCpm = formatLargeNumber(cpm); // Format the CPM
-                console.log("Formatted CPM:", formattedCpm);
+                // console.log("Formatted CPM:", formattedCpm);
 
                 cpmElement.textContent = `CPM: ${formattedCpm} cookies`; // Display the formatted CPM
             } else {
