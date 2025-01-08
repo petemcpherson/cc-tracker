@@ -24,6 +24,7 @@ function formatLargeNumber(num) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const cpmElement = document.getElementById("cpm");
+    const maxLuckyElement = document.getElementById("max-lucky");
     const upgradeElement = document.createElement("div");
     upgradeElement.id = "get-lucky-status";
     upgradeElement.textContent = "Checking 'Get Lucky' status...";
@@ -67,15 +68,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (gameData.cookiesPerSecond !== null) {
                 const multiplier = gameData.hasGetLucky ? 42000 : 6000;
                 const cpm = gameData.cookiesPerSecond * multiplier;
-                // console.log("Calculated CPM:", cpm);
+                const maxLucky = gameData.cookiesPerSecond * 900;  // Calculate Max Lucky
 
-                const formattedCpm = formatLargeNumber(cpm); // Format the CPM
-                // console.log("Formatted CPM:", formattedCpm);
+                const formattedCpm = formatLargeNumber(cpm);
+                const formattedMaxLucky = formatLargeNumber(maxLucky);
 
-                cpmElement.textContent = `CPM: ${formattedCpm} cookies`; // Display the formatted CPM
+                cpmElement.textContent = `CPM: ${formattedCpm} cookies`;
+                maxLuckyElement.textContent = `Max Lucky: ${formattedMaxLucky} cookies`;
             } else {
                 console.log("Could not retrieve cookies per second.");
                 cpmElement.textContent = "Could not retrieve cookies per second.";
+                maxLuckyElement.textContent = "Could not calculate Max Lucky.";
             }
 
             upgradeElement.textContent = `Get Lucky: ${gameData.hasGetLucky ? "yes" : "no"}`;
@@ -83,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error("Error fetching CPM or 'Get Lucky' status:", error);
             cpmElement.textContent = "Error calculating CPM.";
+            maxLuckyElement.textContent = "Error calculating Max Lucky.";
             upgradeElement.textContent = "Error checking 'Get Lucky' status.";
         }
     };
