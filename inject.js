@@ -5,6 +5,7 @@
             // console.log('Game:', Game);
             // Check for 'Get Lucky' upgrade
             const getLuckyUpgrade = Game.UpgradesById[86];
+            const currentBank = Game.cookies;
             const hasGetLucky = getLuckyUpgrade && getLuckyUpgrade.bought === 1;
             // console.log(`Has "Get Lucky" upgrade: ${hasGetLucky}`);
 
@@ -12,7 +13,8 @@
             const combinedEvent = new CustomEvent("GameDataRetrieved", {
                 detail: {
                     cookiesPerSecond: Game.cookiesPsRaw,
-                    hasGetLucky
+                    hasGetLucky,
+                    currentBank
                 },
             });
             window.dispatchEvent(combinedEvent);

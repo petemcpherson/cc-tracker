@@ -25,6 +25,7 @@ function formatLargeNumber(num) {
 document.addEventListener("DOMContentLoaded", () => {
     const cpmElement = document.getElementById("cpm");
     const maxLuckyElement = document.getElementById("max-lucky");
+    const bankStatusElement = document.getElementById("bank-status");
     const upgradeElement = document.createElement("div");
     upgradeElement.id = "get-lucky-status";
     upgradeElement.textContent = "Checking 'Get Lucky' status...";
@@ -68,17 +69,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (gameData.cookiesPerSecond !== null) {
                 const multiplier = gameData.hasGetLucky ? 42000 : 6000;
                 const cpm = gameData.cookiesPerSecond * multiplier;
-                const maxLucky = gameData.cookiesPerSecond * 900;  // Calculate Max Lucky
+                const maxLucky = gameData.cookiesPerSecond * 900;
+                const multipliedCPS = gameData.cookiesPerSecond * multiplier;
 
                 const formattedCpm = formatLargeNumber(cpm);
                 const formattedMaxLucky = formatLargeNumber(maxLucky);
 
                 cpmElement.textContent = `CPM: ${formattedCpm} cookies`;
+                
+                // Calculate and show bank difference
+                const difference = Math.abs(multipliedCPS - gameData.currentBank);
+                const formattedDifference = formatLargeNumber(difference);
+                if (gameData.currentBank < multipliedCPS) {
+                    bankStatusElement.textContent = `You should bank ${formattedDifference} more cookies`;
+                } else {
+                    bankStatusElement.textContent = `${formattedDifference} available to spend!`;
+                }
+                
                 maxLuckyElement.textContent = `Max Lucky: ${formattedMaxLucky} cookies`;
             } else {
                 console.log("Could not retrieve cookies per second.");
                 cpmElement.textContent = "Could not retrieve cookies per second.";
                 maxLuckyElement.textContent = "Could not calculate Max Lucky.";
+                bankStatusElement.textContent = "Could not calculate bank status.";
             }
 
             upgradeElement.textContent = `Get Lucky: ${gameData.hasGetLucky ? "yes" : "no"}`;
@@ -88,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cpmElement.textContent = "Error calculating CPM.";
             maxLuckyElement.textContent = "Error calculating Max Lucky.";
             upgradeElement.textContent = "Error checking 'Get Lucky' status.";
+            bankStatusElement.textContent = "Error calculating bank status.";
         }
     };
 
