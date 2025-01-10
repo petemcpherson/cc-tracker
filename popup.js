@@ -23,21 +23,20 @@ function formatLargeNumber(num) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const cpmElement = document.getElementById("cpm");
-    const maxLuckyElement = document.getElementById("max-lucky");
-    const bankStatusElement = document.getElementById("bank-status");
-    const upgradeElement = document.createElement("div");
-    upgradeElement.id = "get-lucky-status";
-    upgradeElement.textContent = "Checking 'Get Lucky' status...";
-    document.body.appendChild(upgradeElement);
+    const appElement = document.getElementById("app");
+    
+    const renderTemplate = (template, data) => {
+        return template.replace(/\${(\w+)}/g, (match, key) => data[key] || '');
+    };
 
-    console.log("DOM fully loaded and parsed");
+    const updateUI = (templateData) => {
+        const template = document.getElementById('stats-template').innerHTML;
+        appElement.innerHTML = renderTemplate(template, templateData);
+    };
 
     const fetchCPM = async () => {
-        console.log("fetchCPM function started");
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            console.log("Tab URL:", tab.url);
 
             // Inject external script into the page
             await chrome.scripting.executeScript({
@@ -45,12 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 func: () => {
                     const script = document.createElement("script");
                     script.src = chrome.runtime.getURL("inject.js");
-                    script.onload = () => script.remove(); // Clean up
+                    script.onload = () => script.remove();
                     document.body.appendChild(script);
                 },
             });
 
-            // Listen for the combined custom event to retrieve both cookies per second and 'Get Lucky' status
             const [{ result: gameData }] = await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 func: () => {
@@ -64,48 +62,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
             });
 
-            console.log("Game data retrieved:", gameData);
-
             if (gameData.cookiesPerSecond !== null) {
                 const multiplier = gameData.hasGetLucky ? 42000 : 6000;
                 const cpm = gameData.cookiesPerSecond * multiplier;
                 const maxLuckyMultiplier = gameData.hasGetLucky ? 6300 : 900;
                 const maxLucky = gameData.cookiesPerSecond * maxLuckyMultiplier;
                 const multipliedCPS = gameData.cookiesPerSecond * multiplier;
-
-                const formattedCpm = formatLargeNumber(cpm);
-                const formattedMaxLucky = formatLargeNumber(maxLucky);
-
-                cpmElement.textContent = `Ideal Bank (Get Lucky): ${formattedCpm} cookies`;
-                
-                // Calculate and show bank difference
                 const difference = Math.abs(multipliedCPS - gameData.currentBank);
-                const formattedDifference = formatLargeNumber(difference);
-                if (gameData.currentBank < multipliedCPS) {
-                    bankStatusElement.textContent = `You should bank ${formattedDifference} more cookies`;
-                } else {
-                    bankStatusElement.textContent = `${formattedDifference} available to spend!`;
-                }
-                
-                maxLuckyElement.textContent = `Max Lucky: ${formattedMaxLucky} cookies`;
+
+                const conjureBank = (gameData.cookiesPerSecond * 12600) / 0.15;
+
+                updateUI({
+                    idealBank: formatLargeNumber(cpm),
+                    idealBankConjure: formatLargeNumber(conjureBank),
+                    maxLucky: formatLargeNumber(maxLucky),
+                    bankStatus: gameData.currentBank < multipliedCPS 
+                        ? `You should bank ${formatLargeNumber(difference)} more cookies`
+                        : `${formatLargeNumber(difference)} available to spend!`,
+                    getLuckyStatus: gameData.hasGetLucky ? "yes" : "no"
+                });
             } else {
-                console.log("Could not retrieve cookies per second.");
-                cpmElement.textContent = "Could not retrieve cookies per second.";
-                maxLuckyElement.textContent = "Could not calculate Max Lucky.";
-                bankStatusElement.textContent = "Could not calculate bank status.";
+                updateUI({
+                    idealBank: "Could not retrieve cookies per second.",
+                    idealBankConjure: "Could not calculate Conjure bank.",
+                    maxLucky: "Could not calculate Max Lucky.",
+                    bankStatus: "Could not calculate bank status.",
+                    getLuckyStatus: "unknown"
+                });
             }
-
-            upgradeElement.textContent = `Get Lucky: ${gameData.hasGetLucky ? "yes" : "no"}`;
-
         } catch (error) {
             console.error("Error fetching CPM or 'Get Lucky' status:", error);
-            cpmElement.textContent = "Error calculating CPM.";
-            maxLuckyElement.textContent = "Error calculating Max Lucky.";
-            upgradeElement.textContent = "Error checking 'Get Lucky' status.";
-            bankStatusElement.textContent = "Error calculating bank status.";
+            updateUI({
+                idealBank: "Error calculating CPM.",
+                idealBankConjure: "Error calculating Conjure bank.",
+                maxLucky: "Error calculating Max Lucky.",
+                bankStatus: "Error calculating bank status.",
+                getLuckyStatus: "Error checking status"
+            });
         }
     };
 
-    // Automatically fetch CPM and 'Get Lucky' status when the popup loads
     fetchCPM();
 });

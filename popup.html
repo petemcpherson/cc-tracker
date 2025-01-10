@@ -24,9 +24,17 @@
 
 <body>
     <h1>Cookie Clicker CPM</h1>
-    <div id="cpm">Loading cookies per second...</div>
-    <div id="bank-status">Calculating bank status...</div>
-    <div id="max-lucky">Calculating Max Lucky...</div>
+    <div id="app">
+        <template id="stats-template">
+            <div class="cpm"><h2>Ideal Bank 👇</h2> 
+                <p>Get Lucky: <b>${idealBank}</b> cookies</p>
+                <p>Conjure: <b>${idealBankConjure}</b> cookies</p>
+            </div>
+            <div class="bank-status">${bankStatus}</div>
+            <div class="max-lucky">Max Lucky: ${maxLucky} cookies</div>
+            <div class="get-lucky-status">Get Lucky: ${getLuckyStatus}</div>
+        </template>
+    </div>
 </body>
 
 </html>
