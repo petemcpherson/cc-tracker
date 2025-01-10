@@ -69,7 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (gameData.cookiesPerSecond !== null) {
                 const multiplier = gameData.hasGetLucky ? 42000 : 6000;
                 const cpm = gameData.cookiesPerSecond * multiplier;
-                const maxLucky = gameData.cookiesPerSecond * 900;
+                const maxLuckyMultiplier = gameData.hasGetLucky ? 6300 : 900;
+                const maxLucky = gameData.cookiesPerSecond * maxLuckyMultiplier;
                 const multipliedCPS = gameData.cookiesPerSecond * multiplier;
 
                 const formattedCpm = formatLargeNumber(cpm);
