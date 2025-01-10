@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const formattedCpm = formatLargeNumber(cpm);
                 const formattedMaxLucky = formatLargeNumber(maxLucky);
 
-                cpmElement.textContent = `CPM: ${formattedCpm} cookies`;
+                cpmElement.textContent = `Ideal Bank (Get Lucky): ${formattedCpm} cookies`;
                 
                 // Calculate and show bank difference
                 const difference = Math.abs(multipliedCPS - gameData.currentBank);
