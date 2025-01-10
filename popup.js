@@ -71,11 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 const difference = Math.abs(multipliedCPS - gameData.currentBank);
 
                 const conjureBank = (gameData.cookiesPerSecond * 12600) / 0.15;
+                const maxConjure = gameData.cookiesPerSecond * 12600;
 
                 updateUI({
                     idealBank: formatLargeNumber(cpm),
                     idealBankConjure: formatLargeNumber(conjureBank),
                     maxLucky: formatLargeNumber(maxLucky),
+                    maxConjure: formatLargeNumber(maxConjure),
                     bankStatus: gameData.currentBank < multipliedCPS 
                         ? `You should bank ${formatLargeNumber(difference)} more cookies`
                         : `${formatLargeNumber(difference)} available to spend!`,
@@ -86,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     idealBank: "Could not retrieve cookies per second.",
                     idealBankConjure: "Could not calculate Conjure bank.",
                     maxLucky: "Could not calculate Max Lucky.",
+                    maxConjure: "Could not calculate Max Conjure.",
                     bankStatus: "Could not calculate bank status.",
                     getLuckyStatus: "unknown"
                 });
@@ -96,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 idealBank: "Error calculating CPM.",
                 idealBankConjure: "Error calculating Conjure bank.",
                 maxLucky: "Error calculating Max Lucky.",
+                maxConjure: "Error calculating Max Conjure.",
                 bankStatus: "Error calculating bank status.",
                 getLuckyStatus: "Error checking status"
             });
